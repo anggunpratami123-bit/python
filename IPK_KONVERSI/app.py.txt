@@ -1,0 +1,59 @@
+import streamlit as st
+
+def hitung_imt(berat_kg, tinggi_m):
+    """Menghitung Indeks Massa Tubuh."""
+    # Pastikan tinggi tidak nol untuk menghindari ZeroDivisionError
+    if tinggi_m == 0:
+        return 0
+    imt = berat_kg / (tinggi_m ** 2)
+    return imt
+
+def tentukan_kategori_imt(imt):
+    """Menentukan kategori IMT."""
+    if imt == 0:
+        return "Masukkan Tinggi yang valid"
+    elif imt < 18.5:
+        return "Kurus/Kekurangan berat badan", "warning" # Warna kuning untuk peringatan
+    elif 18.5 <= imt < 25.0:
+        return "Normal/Ideal", "success" # Warna hijau untuk hasil baik
+    elif 25.0 <= imt < 30.0:
+        return "Kelebihan berat badan", "warning"
+    else:
+        return "Obesitas", "danger" # Warna merah untuk risiko
+
+# --- Tampilan Aplikasi Streamlit ---
+
+st.title("Aplikasi Penghitung Indeks Massa Tubuh (IMT) 🏋️")
+st.markdown("Hitung status berat badan Anda dengan IMT.")
+
+# Input menggunakan slider dan number_input Streamlit
+berat = st.slider("Masukkan **berat** badan Anda (kg):", min_value=1.0, max_value=200.0, value=70.0, step=0.1)
+tinggi_cm = st.slider("Masukkan **tinggi** badan Anda (cm):", min_value=50, max_value=250, value=170, step=1)
+
+# Konversi tinggi dari cm ke meter
+tinggi_m = tinggi_cm / 100
+
+st.write(f"Tinggi dalam meter: **{tinggi_m:.2f} m**")
+
+# Tombol untuk menghitung
+if st.button("Hitung IMT"):
+    # Panggil fungsi dan tampilkan hasil
+    hasil_imt = hitung_imt(berat, tinggi_m)
+    
+    # Menentukan kategori dan warna
+    kategori, color = tentukan_kategori_imt(hasil_imt)
+
+    st.subheader("--- Hasil Perhitungan IMT ---")
+    st.info(f"Nilai IMT Anda adalah: **{hasil_imt:.2f}**")
+    
+    # Menampilkan kategori dalam box berwarna (metric/alert)
+    if color == "success":
+        st.success(f"Kategori: **{kategori}**")
+    elif color == "warning":
+        st.warning(f"Kategori: **{kategori}**")
+    elif color == "danger":
+        st.error(f"Kategori: **{kategori}**")
+    else:
+        st.write(f"Kategori: **{kategori}**")
+
+    st.balloons() # Efek visual
